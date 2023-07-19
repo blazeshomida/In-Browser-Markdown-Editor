@@ -25,7 +25,7 @@ const Header = () => {
   return (
     <header
       className={`${
-        menuOpen ? "translate-x-64" : "transition-transform"
+        menuOpen ? "translate-x-64" : "translate-x-0 duration-300"
       } flex bg-neutral-800 text-neutral-100  transition-transform ease-out`}
     >
       <Button
@@ -103,7 +103,9 @@ function TitleCard({}) {
             />
           </TextField>
         ) : (
-          <p className="text-heading-m">{title}</p>
+          <p className="cursor-pointer text-heading-m" onClick={handleEdit}>
+            {title}
+          </p>
         )}
       </div>
     </div>

@@ -4,57 +4,89 @@ import { Button } from "react-aria-components";
 import SidebarNav from "../components/SidebarNav";
 import { useMenuOpen } from "@/hooks/useAppStore";
 import SplitPane from "@/components/SplitPane";
+import ReactMarkdown from "react-markdown";
+import { MouseEvent, ReactNode, useState } from "react";
+import { type } from "os";
+import remarkGfm from "remark-gfm";
 
 export default function App() {
+  const [markdown, setMarkdown] = useState("");
   return (
-    <div>
+    <div className="grid flex-1 overflow-y-auto bg-neutral-1000 text-neutral-400">
       <SidebarNav />
-      <SplitPane range={10} defaultSplit={50} minSizeLeft={30} maxSizeLeft={70}>
-        <div className="h-full p-6">
-          <h1>
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Iste
-            maiores, ullam consequatur culpa inventore delectus nobis earum
-            architecto quaerat, eum odit, necessitatibus nam hic ut eveniet
-            suscipit? Inventore, expedita quo? Magnam veniam, natus sunt maiores
-            sapiente impedit delectus amet consequatur exercitationem nesciunt
-            inventore soluta vitae quisquam libero quas vel fugit ratione,
-            similique recusandae. Totam quae, nihil blanditiis cumque vel fugit?
-            Cupiditate reprehenderit voluptatibus eius nesciunt, quasi iusto
-            officiis rem voluptas tempora, ab consectetur saepe optio suscipit
-            deleniti alias, accusantium dolorem maxime dolor! Corrupti in cumque
-            quasi exercitationem illum numquam aspernatur? Rerum dicta vero nisi
-            tempora adipisci eos, soluta fuga ab, ipsam atque molestias vel
-            repellat nihil ipsa error incidunt, nostrum provident nulla veniam
-            unde ipsum rem consequatur! Vitae, facilis repellat? Aliquid nobis
-            hic eum reprehenderit exercitationem nesciunt modi odio aperiam.
-            Fugiat minima quaerat cupiditate aspernatur animi, consectetur est
-            corrupti ipsam laudantium iste dicta a veritatis incidunt laborum
-            nobis provident expedita.
-          </h1>
-        </div>
-        <div className="h-full p-6">
-          <h1>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. A deleniti
-            consequatur corporis ipsa consequuntur nemo dicta nobis eaque?
-            Corrupti at fuga omnis debitis in! Aliquid fugiat temporibus officia
-            rem. Omnis! Cupiditate autem iste placeat modi praesentium
-            blanditiis fugiat magnam similique odit ipsam quo quibusdam
-            voluptatem minima incidunt maiores veniam corrupti quae,
-            consequuntur rem et facilis accusantium aperiam ratione iure!
-            Blanditiis. Explicabo quasi maiores facere quisquam corrupti
-            aliquid, recusandae reprehenderit. Id velit cumque fugit aperiam
-            dicta sapiente voluptates vero fuga ea quisquam, cupiditate, qui,
-            nulla quod natus tempora hic deserunt reprehenderit. Dolore aliquam
-            nobis facilis praesentium sed nemo. Suscipit vitae fuga delectus
-            quia dolorem at nesciunt. Doloremque nemo optio soluta, maxime
-            dolorum repellendus accusamus. Praesentium, amet nobis perspiciatis
-            nemo vitae dolor. Maiores culpa architecto eveniet placeat porro!
-            Maxime veritatis ut nihil consectetur corrupti inventore dolore
-            quasi ratione iste magnam. Dolor eligendi velit sunt alias ipsam,
-            quia temporibus ut minus incidunt id?
-          </h1>
+      <SplitPane
+        range={10}
+        defaultSplit={50}
+        splitPoints={[30, 50, 70]}
+        collapseThreshold={5}
+      >
+        <form className="font-mono text-preview-paragraph">
+          <textarea
+            name=""
+            id=""
+            className="h-full  w-full resize-none bg-[inherit] p-6"
+            autoFocus
+            onChange={(e) => setMarkdown(e.target.value)}
+            value={markdown}
+            onClick={(e: MouseEvent<HTMLTextAreaElement>) =>
+              e.currentTarget.focus()
+            }
+          />
+        </form>
+        <div className="">
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            className=" p-6 font-serif"
+            components={PreviewComponents}
+          >
+            {markdown}
+          </ReactMarkdown>
         </div>
       </SplitPane>
     </div>
   );
 }
+
+type childrenType = {
+  children: ReactNode;
+};
+
+const PreviewH1 = ({ children }: childrenType) => {
+  return <h1 className="text-preview-h1 font-bold">{children}</h1>;
+};
+const PreviewH2 = ({ children }: childrenType) => {
+  return <h2 className="text-preview-h2 font-light">{children}</h2>;
+};
+const PreviewH3 = ({ children }: childrenType) => {
+  return <h3 className="text-preview-h3 font-bold">{children}</h3>;
+};
+const PreviewH4 = ({ children }: childrenType) => {
+  return <h4 className="text-preview-h4 font-bold">{children}</h4>;
+};
+const PreviewH5 = ({ children }: childrenType) => {
+  return <h5 className="text-preview-h5 font-bold">{children}</h5>;
+};
+const PreviewH6 = ({ children }: childrenType) => {
+  return <h6 className="text-preview-h6 font-bold">{children}</h6>;
+};
+
+const PreviewComponents = {
+  h1({ children }: childrenType) {
+    return <PreviewH1>{children}</PreviewH1>;
+  },
+  h2({ children }: childrenType) {
+    return <PreviewH2>{children}</PreviewH2>;
+  },
+  h3({ children }: childrenType) {
+    return <PreviewH3>{children}</PreviewH3>;
+  },
+  h4({ children }: childrenType) {
+    return <PreviewH4>{children}</PreviewH4>;
+  },
+  h5({ children }: childrenType) {
+    return <PreviewH5>{children}</PreviewH5>;
+  },
+  h6({ children }: childrenType) {
+    return <PreviewH6>{children}</PreviewH6>;
+  },
+};

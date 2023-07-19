@@ -10,7 +10,7 @@ export default function SidebarNav({}) {
   return (
     <nav
       className={`${
-        menuOpen ? "translate-x-0" : "-translate-x-64"
+        menuOpen ? "translate-x-0" : "-translate-x-64 duration-300"
       } fixed inset-y-0 left-0 w-64 bg-neutral-900 px-6 py-4 transition-transform ease-out`}
     >
       <Logo className=" my-4 md:hidden" />

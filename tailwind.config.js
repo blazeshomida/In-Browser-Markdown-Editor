@@ -33,7 +33,7 @@ module.exports = {
       "preview-h4": "1.25rem",
       "preview-h5": "1rem",
       "preview-h6": ".875",
-      "preview-paragraph": [".875rem", { letterSpacing: "1.5rem" }],
+      "preview-paragraph": [".875rem", { lineHeight: "1.5rem" }],
     },
     extend: {
       fontFamily: {
@@ -43,5 +43,5 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [require("@tailwindcss/typography")],
 };

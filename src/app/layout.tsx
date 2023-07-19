@@ -13,8 +13,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className="grid h-screen grid-rows-[min-content_1fr] caret-orange">
+    <html lang="en" className="h-full">
+      <body className="flex flex-col h-full caret-orange">
         <Header />
         {children}
       </body>

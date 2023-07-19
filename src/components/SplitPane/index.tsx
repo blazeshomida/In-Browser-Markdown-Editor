@@ -10,16 +10,16 @@ import { useSeparator } from "@react-aria/separator";
 import { Button } from "react-aria-components";
 
 const SplitPane = ({
+  splitPoints = [20, 50, 80],
   defaultSplit = 50,
-  minSizeLeft = 20,
-  maxSizeLeft = 80,
   range = 15,
+  collapseThreshold = 5, // New prop to define the collapse threshold
   children,
 }: {
+  splitPoints: number[];
   defaultSplit: number;
-  minSizeLeft: number;
-  maxSizeLeft: number;
   range: number;
+  collapseThreshold: number;
   children: ReactNode[];
 }) => {
   const split = useMotionValue(defaultSplit);
@@ -27,56 +27,54 @@ const SplitPane = ({
   const isResizing = useResizing();
   const startResizing = useStartResizing();
   const stopResizing = useStopResizing();
-
   const splitPercentage = useTransform(split, (value) => `${value}%`);
 
   useEffect(() => {
     function handleMouseUp() {
-      if (
-        split.get() > defaultSplit - range &&
-        split.get() < defaultSplit + range
-      ) {
-        split.set(defaultSplit);
+      // Check if the pane should be collapsed
+      if (split.get() < collapseThreshold) {
+        split.set(0);
+      } else if (split.get() > 100 - collapseThreshold) {
+        split.set(100);
+      } else {
+        // Snap to the nearest split point if not collapsing
+        const closestSplit = splitPoints.reduce((prev, curr) =>
+          Math.abs(curr - split.get()) < Math.abs(prev - split.get())
+            ? curr
+            : prev,
+        );
+
+        split.set(closestSplit);
       }
-      if (split.get() < minSizeLeft + range) {
-        split.set(minSizeLeft);
-      }
-      if (split.get() > maxSizeLeft - range) {
-        split.set(maxSizeLeft);
-      }
+
       stopResizing();
     }
+
     function handleMouseMove(e: MouseEvent) {
       if (e.button !== 0) return;
       if (!isResizing) return;
 
       let newSplit = (e.clientX / window.innerWidth) * 100;
 
-      // Compute distance to nearest snap point
-      let distanceToSnap = Math.min(
-        Math.abs(newSplit - defaultSplit),
-        Math.abs(newSplit - minSizeLeft),
-        Math.abs(newSplit - maxSizeLeft),
-      );
+      for (let i = 0; i < splitPoints.length; i++) {
+        // Check if the new split is within the range of this split point
+        if (
+          newSplit > splitPoints[i] - range &&
+          newSplit < splitPoints[i] + range
+        ) {
+          // Compute a dampening factor based on the distance to the snap point
+          let distanceToSnap = Math.abs(newSplit - splitPoints[i]);
+          let dampeningFactor = distanceToSnap / range;
 
-      // Compute a dampening factor based on the distance to the snap point
-      // This will be a number between 0 and 1
-      let dampeningFactor = distanceToSnap / range;
-
-      // If the new split point is too close to a snap point, reduce the amount it changes
-      if (newSplit < minSizeLeft + range) {
-        newSplit = minSizeLeft + (newSplit - minSizeLeft) * dampeningFactor;
-      } else if (newSplit > maxSizeLeft - range) {
-        newSplit = maxSizeLeft - (maxSizeLeft - newSplit) * dampeningFactor;
-      } else if (
-        newSplit > defaultSplit - range &&
-        newSplit < defaultSplit + range
-      ) {
-        newSplit = defaultSplit + (newSplit - defaultSplit) * dampeningFactor;
+          // Apply the dampening factor
+          newSplit =
+            splitPoints[i] + (newSplit - splitPoints[i]) * dampeningFactor;
+        }
       }
 
       split.set(newSplit);
     }
+
     window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("mouseup", handleMouseUp);
 
@@ -84,38 +82,33 @@ const SplitPane = ({
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [
-    isResizing,
-    split,
-    minSizeLeft,
-    maxSizeLeft,
-    defaultSplit,
-    range,
-    stopResizing,
-  ]);
+  }, [isResizing, split, splitPoints, range, stopResizing, collapseThreshold]);
 
   return (
     <div
       className={`${
-        menuOpen ? "translate-x-64" : "translate-x-0"
-      } flex h-full transition-transform ease-out`}
+        menuOpen ? "translate-x-64" : "translate-x-0  duration-300"
+      } flex overflow-y-auto transition-transform ease-out`}
     >
+
       <motion.div
-        className={isResizing ? "cursor-col-resize select-none" : ""}
+        className={`grid ${
+          isResizing ? " cursor-col-resize select-none" : ""
+        } h-full overflow-y-auto`} // Added overflow-y-auto here
         style={{ flexBasis: splitPercentage }}
       >
         {children?.[0]}
       </motion.div>
       <div
-        className={`peer relative w-[1px] cursor-col-resize bg-neutral-300 after:absolute after:top-0 after:z-10 after:h-full after:bg-orange-hover hover:after:w-0.5  hover:after:left-0${
+        className={`peer relative w-[1px] cursor-col-resize bg-neutral-600 after:absolute after:top-0 after:z-10 after:h-full after:bg-orange-hover hover:after:w-0.5  hover:after:left-0${
           isResizing ? "after:-left-1  after:w-1" : ""
         }`}
         onMouseDown={startResizing}
-      />
+      ></div>
       <div
         className={`${
-          isResizing ? "cursor-col-resize select-none" : ""
-        } flex-1`}
+          isResizing ? "cursor-col-resize select-none " : ""
+        } h-full flex-1 overflow-y-auto`} // Added overflow-y-auto here
       >
         {children?.[1]}
       </div>
