@@ -6,7 +6,6 @@ import ReactMarkdown from "react-markdown";
 import { ChangeEvent, ReactNode, isValidElement } from "react";
 import remarkGfm from "remark-gfm";
 import {
-  Panels,
   useActivePanel,
   useDarkMode,
   useSetActivePanel,
@@ -21,11 +20,6 @@ import {
   useUpdateCurrentDocument,
 } from "@/hooks/useDocumentStore";
 import useMounted from "@/hooks/useMounted";
-import {
-  HidePreviewIcon,
-  Logo,
-  ShowPreviewIcon,
-} from "../../public/assets/svg";
 import { useTheme } from "next-themes";
 
 export default function App() {
@@ -50,61 +44,29 @@ export default function App() {
         splitPoints={[30, 50, 70]}
         collapseThreshold={5}
       >
-        <div className="grid h-full grid-rows-[min-content_1fr] overflow-y-auto ">
-          <div className="sticky top-0 z-10 flex justify-between bg-neutral-200 px-4 py-3 text-heading-s uppercase text-neutral-500 dark:bg-neutral-900 dark:text-neutral-400">
-            <p>Markdown</p>
-            <button
-              onClick={() =>
-                setActivePanel(activePanel === "left" ? "none" : "left")
-              }
-            >
-              {activePanel === "left" ? (
-                <HidePreviewIcon />
-              ) : (
-                <ShowPreviewIcon />
-              )}
-            </button>
-          </div>
-          {mounted && darkMode !== undefined && (
-            <form className="mx-auto h-full w-full max-w-2xl pb-32 font-mono text-preview-paragraph text-neutral-700 dark:text-neutral-400">
-              <textarea
-                name=""
-                id=""
-                className=" h-full w-full resize-none overflow-clip bg-[inherit] px-6 pt-8"
-                autoFocus
-                onChange={handleChange}
-                value={document?.content}
-              />
-            </form>
-          )}
-        </div>
+        {mounted && darkMode !== undefined && (
+          <form className="mx-auto h-full w-full max-w-2xl pb-32 font-mono text-preview-paragraph text-neutral-700 dark:text-neutral-400">
+            <textarea
+              name=""
+              id=""
+              className=" h-full w-full resize-none overflow-clip bg-[inherit] px-6 pt-8"
+              autoFocus
+              onChange={handleChange}
+              value={document?.content}
+            />
+          </form>
+        )}
 
-        <div className="grid h-full grid-rows-[min-content_1fr] overflow-hidden">
-          <div className="sticky top-0 z-10 flex  justify-between bg-neutral-200 px-4 py-3 text-heading-s uppercase text-neutral-500 dark:bg-neutral-900 dark:text-neutral-400">
-            <p>Preview</p>
-            <button
-              onClick={() =>
-                setActivePanel(activePanel === "right" ? "none" : "right")
-              }
+        <div className="h-full w-full overflow-y-auto">
+          {mounted && darkMode !== undefined && (
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              className="_markdown-preview mx-auto h-full max-w-2xl  overscroll-contain p-6 font-serif text-neutral-700 prose-a:text-[inherit] prose-li:text-neutral-500 dark:text-neutral-100"
+              components={PreviewComponents}
             >
-              {activePanel === "right" ? (
-                <HidePreviewIcon />
-              ) : (
-                <ShowPreviewIcon />
-              )}
-            </button>
-          </div>
-          <div className="h-full w-full overflow-y-auto">
-            {mounted && darkMode !== undefined && (
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                className="mx-auto h-full max-w-2xl overscroll-contain p-6 font-serif text-neutral-700 prose-a:text-[inherit] prose-li:text-neutral-500 dark:text-neutral-100"
-                components={PreviewComponents}
-              >
-                {document?.content}
-              </ReactMarkdown>
-            )}
-          </div>
+              {document?.content}
+            </ReactMarkdown>
+          )}
         </div>
       </SplitPane>
     </div>

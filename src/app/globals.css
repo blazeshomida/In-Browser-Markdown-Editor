@@ -38,3 +38,7 @@
 *:focus {
   outline: none;
 }
+
+._markdown-preview > *:last-child {
+  padding-bottom: 8rem;
+}

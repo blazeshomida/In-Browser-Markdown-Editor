@@ -1,21 +1,19 @@
-import React, { useState, useEffect, ReactNode } from "react";
+import React, { useEffect, ReactNode } from "react";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import {
   useActivePanel,
-  useDarkMode,
   useMenuOpen,
   useResizing,
   useSetActivePanel,
   useSetResizing,
 } from "@/hooks/useAppStore";
-import { useSeparator } from "@react-aria/separator";
-import { Button } from "react-aria-components";
+import { HidePreviewIcon, ShowPreviewIcon } from "../../../public/assets/svg";
 
 const SplitPane = ({
   splitPoints = [20, 50, 80],
   defaultSplit = 50,
   range = 15,
-  collapseThreshold = 5, // New prop to define the collapse threshold
+  collapseThreshold = 5,
   children,
 }: {
   splitPoints: number[];
@@ -33,54 +31,70 @@ const SplitPane = ({
   const setActivePanel = useSetActivePanel();
 
   function handleMouseDown() {
-    if (menuOpen) return;
-    setResizing(true);
+    if (!menuOpen) setResizing(true);
   }
 
-  useEffect(() => {
-    console.log(activePanel);
-    if (activePanel === "none") return split.set(50);
-    if (activePanel === "left") return split.set(100);
-    if (activePanel === "right") return split.set(0);
-  }, [activePanel, split, setActivePanel]);
+  function handleMouseMove(e: MouseEvent) {
+    if (e.button !== 0) return;
+    let newSplit = (e.clientX / window.innerWidth) * 100;
+    const snapPoint = splitPoints.find(
+      (point) => Math.abs(newSplit - point) < range,
+    );
+    if (snapPoint) {
+      const distanceToSnap = Math.abs(newSplit - snapPoint);
+      const dampeningFactor = distanceToSnap / range;
+      newSplit = snapPoint + (newSplit - snapPoint) * dampeningFactor;
+    }
+    split.set(newSplit);
+  }
 
-  useEffect(() => {
-    if (!isResizing) return;
-    function handleMouseUp() {
-      // Check if the pane should be collapsed
-      if (split.get() < collapseThreshold) {
-        split.set(0);
-        setActivePanel("right");
-        return setResizing(false);
-      }
-      if (split.get() > 100 - collapseThreshold) {
-        split.set(100);
-        setActivePanel("left");
-        return setResizing(false);
-      }
-      // Snap to the nearest split point if not collapsing
+  function handleMouseUp() {
+    if (split.get() < collapseThreshold) {
+      setActivePanel("right");
+    }
+    if (split.get() > 100 - collapseThreshold) {
+      setActivePanel("left");
+    }
+    if (
+      split.get() > collapseThreshold &&
+      split.get() < 100 - collapseThreshold
+    ) {
       const closestSplit = splitPoints.reduce((prev, curr) =>
         Math.abs(curr - split.get()) < Math.abs(prev - split.get())
           ? curr
           : prev,
       );
       split.set(closestSplit);
-      setResizing(false);
     }
+    setResizing(false);
+  }
 
-    function handleMouseMove(e: MouseEvent) {
-      if (e.button !== 0) return;
-      let newSplit = (e.clientX / window.innerWidth) * 100;
-      const snapPoint = splitPoints.find(
-        (point) => Math.abs(newSplit - point) < range,
-      );
-      if (snapPoint) {
-        const distanceToSnap = Math.abs(newSplit - snapPoint);
-        const dampeningFactor = distanceToSnap / range;
-        newSplit = snapPoint + (newSplit - snapPoint) * dampeningFactor;
-      }
-      split.set(newSplit);
+  function handleMouseOperations(e: MouseEvent, operation: string) {
+    switch (operation) {
+      case "down":
+        handleMouseDown();
+        break;
+      case "move":
+        handleMouseMove(e);
+        break;
+      case "up":
+        handleMouseUp();
+        break;
+      default:
+        break;
     }
+  }
+
+  useEffect(() => {
+    if (activePanel === "none") return split.set(50);
+    if (activePanel === "left") return split.set(100);
+    if (activePanel === "right") return split.set(0);
+  }, [activePanel, split]);
+
+  useEffect(() => {
+    if (!isResizing) return;
+    const handleMouseMove = (e: MouseEvent) => handleMouseOperations(e, "move");
+    const handleMouseUp = (e: MouseEvent) => handleMouseOperations(e, "up");
 
     window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("mouseup", handleMouseUp);
@@ -99,11 +113,25 @@ const SplitPane = ({
     >
       {activePanel !== "right" && (
         <motion.div
-          className={`grid  ${
+          className={`grid h-full grid-rows-[min-content_1fr] overflow-y-auto ${
             isResizing ? "cursor-col-resize select-none " : ""
           }`}
           style={{ flexBasis: splitPercentage }}
         >
+          <div className=" sticky top-0 z-10 flex justify-between bg-neutral-200 px-4 py-3 text-heading-s uppercase text-neutral-500 dark:bg-neutral-900 dark:text-neutral-400">
+            <p>Markdown</p>
+            <button
+              onClick={() =>
+                setActivePanel(activePanel === "left" ? "none" : "left")
+              }
+            >
+              {activePanel === "left" ? (
+                <HidePreviewIcon />
+              ) : (
+                <ShowPreviewIcon />
+              )}
+            </button>
+          </div>
           {children?.[0]}
         </motion.div>
       )}
@@ -121,8 +149,22 @@ const SplitPane = ({
         <div
           className={`${
             isResizing ? "cursor-col-resize select-none " : ""
-          } grid  flex-1`}
+          } grid  h-full flex-1 grid-rows-[min-content_1fr] overflow-hidden`}
         >
+          <div className="sticky top-0 z-10 flex  justify-between bg-neutral-200 px-4 py-3 text-heading-s uppercase text-neutral-500 dark:bg-neutral-900 dark:text-neutral-400">
+            <p>Preview</p>
+            <button
+              onClick={() =>
+                setActivePanel(activePanel === "right" ? "none" : "right")
+              }
+            >
+              {activePanel === "right" ? (
+                <HidePreviewIcon />
+              ) : (
+                <ShowPreviewIcon />
+              )}
+            </button>
+          </div>
           {children?.[1]}
         </div>
       )}
