@@ -1,11 +1,5 @@
 "use client";
-import React, {
-  ChangeEvent,
-  Dispatch,
-  KeyboardEvent,
-  SetStateAction,
-  useState,
-} from "react";
+import React, { ChangeEvent, KeyboardEvent, useEffect, useState } from "react";
 import { Button, Input, TextField } from "react-aria-components";
 import {
   CloseIcon,
@@ -15,12 +9,25 @@ import {
   MenuIcon,
   SaveIcon,
 } from "../../../public/assets/svg";
-import SidebarNav from "../SidebarNav";
 import { useMenuOpen, useToggleMenu } from "@/hooks/useAppStore";
+import {
+  useCurrentDocument,
+  useDeleteDocument,
+  useUpdateCurrentDocument,
+  useUpdateDocument,
+} from "@/hooks/useDocumentStore";
+import useMounted from "@/hooks/useMounted";
 
 const Header = () => {
   const menuOpen = useMenuOpen();
   const setMenuOpen = useToggleMenu();
+  const updateDocument = useUpdateDocument();
+  const deleteDocument = useDeleteDocument();
+
+
+  function handleSave() {
+    updateDocument();
+  }
 
   return (
     <header
@@ -46,10 +53,16 @@ const Header = () => {
           <TitleCard />
         </div>
         <div className={`flex gap-6`}>
-          <Button className="self-stretch rounded text-neutral-500 transition-all duration-150 focus:outline-none data-[hovered]:text-orange data-[focus-visible]:outline-2 data-[focus-visible]:outline-orange ">
+          <Button
+            onPress={deleteDocument}
+            className="self-stretch rounded text-neutral-500 transition-all duration-150 focus:outline-none data-[hovered]:text-orange data-[focus-visible]:outline-2 data-[focus-visible]:outline-orange "
+          >
             <DeleteIcon />
           </Button>
-          <Button className="flex items-center justify-center gap-2 rounded bg-orange p-3 transition-all duration-150 focus:outline-none data-[hovered]:bg-orange-hover data-[focus-visible]:outline-2 data-[focus-visible]:outline-offset-4 data-[focus-visible]:outline-orange">
+          <Button
+            onPress={handleSave}
+            className="flex items-center justify-center gap-2 rounded bg-orange p-3 transition-all duration-150 focus:outline-none data-[hovered]:bg-orange-hover data-[focus-visible]:outline-2 data-[focus-visible]:outline-offset-4 data-[focus-visible]:outline-orange"
+          >
             <SaveIcon />
             <span className="hidden md:inline">Save Changes</span>
           </Button>
@@ -63,20 +76,31 @@ export default Header;
 
 function TitleCard({}) {
   const [isEditing, setIsEditing] = useState(false);
-  const [title, setTitle] = useState("welcome.md");
+  const document = useCurrentDocument();
+  const setCurrentDocument = useUpdateCurrentDocument();
+  const currentDocument = useCurrentDocument();
+  const updateDocument = useUpdateDocument();
+
+  const mounted = useMounted();
+
+  if (!mounted) {
+    return null;
+  }
 
   function handleEdit() {
     setIsEditing((prev) => !prev);
+    updateDocument();
   }
 
   function handleInput(e: ChangeEvent<HTMLInputElement>) {
     e.stopPropagation();
-    setTitle(e.target.value);
+    setCurrentDocument("title", e.target.value);
   }
 
   function handleKeydown(e: KeyboardEvent<HTMLInputElement>) {
-    console.log(e.code);
-    if (e.code === "Enter" || e.code === "Escape") setIsEditing(false);
+    if (e.code !== "Enter" && e.code !== "Escape") return;
+    setIsEditing(false);
+    updateDocument();
   }
 
   return (
@@ -95,17 +119,19 @@ function TitleCard({}) {
         {isEditing ? (
           <TextField>
             <Input
-              value={title}
+              value={document.title}
               className="border-b bg-transparent focus:outline-none data-[focus-visible]:outline-2 data-[focus-visible]:outline-orange "
               onChange={handleInput}
               onBlur={() => setIsEditing(false)}
               onKeyDown={handleKeydown}
             />
           </TextField>
-        ) : (
+        ) : document?.title ? (
           <p className="cursor-pointer text-heading-m" onClick={handleEdit}>
-            {title}
+            {document.title}
           </p>
+        ) : (
+          <div>Loading</div>
         )}
       </div>
     </div>

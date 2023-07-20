@@ -2,6 +2,7 @@
 
 const defaultTheme = require("tailwindcss/defaultTheme");
 module.exports = {
+  darkMode: 'class',
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -9,16 +10,18 @@ module.exports = {
   ],
   theme: {
     colors: {
-      "neutral-100": "#FFFFFF",
-      "neutral-200": "#f5f5f5",
-      "neutral-300": "#e4e4e4",
-      "neutral-400": "#c1c4cb",
-      "neutral-500": "#7c8187",
-      "neutral-600": "#5a6069",
-      "neutral-700": "#35393f",
-      "neutral-800": "#2b2d31",
-      "neutral-900": "#1d1f22",
-      "neutral-1000": "#151619",
+      neutral: {
+        "100": "#FFFFFF",
+        "200": "#f5f5f5",
+        "300": "#e4e4e4",
+        "400": "#c1c4cb",
+        "500": "#7c8187",
+        "600": "#5a6069",
+        "700": "#35393f",
+        "800": "#2b2d31",
+        "900": "#1d1f22",
+        "1000": "#151619",
+      },
       orange: "#e46643",
       "orange-hover": "#f39765",
       transparent: "rgb(0 , 0, 0, 0)",
