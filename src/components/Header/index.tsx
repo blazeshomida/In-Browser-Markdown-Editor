@@ -24,7 +24,6 @@ const Header = () => {
   const updateDocument = useUpdateDocument();
   const deleteDocument = useDeleteDocument();
 
-
   function handleSave() {
     updateDocument();
   }
@@ -78,14 +77,8 @@ function TitleCard({}) {
   const [isEditing, setIsEditing] = useState(false);
   const document = useCurrentDocument();
   const setCurrentDocument = useUpdateCurrentDocument();
-  const currentDocument = useCurrentDocument();
   const updateDocument = useUpdateDocument();
-
   const mounted = useMounted();
-
-  if (!mounted) {
-    return null;
-  }
 
   function handleEdit() {
     setIsEditing((prev) => !prev);
@@ -126,7 +119,7 @@ function TitleCard({}) {
               onKeyDown={handleKeydown}
             />
           </TextField>
-        ) : document?.title ? (
+        ) : mounted ? (
           <p className="cursor-pointer text-heading-m" onClick={handleEdit}>
             {document.title}
           </p>

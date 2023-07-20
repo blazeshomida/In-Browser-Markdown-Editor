@@ -28,7 +28,6 @@ import { useTheme } from "next-themes";
 
 export default function SidebarNav({}) {
   const menuOpen = useMenuOpen();
-  const toggleDarkMode = useToggleDarkMode();
   const createDocument = useCreateDocument();
   const documents = useDocuments();
   const setCurrentDocument = useSetCurrentDocument();

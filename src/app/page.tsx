@@ -21,7 +21,11 @@ import {
   useUpdateCurrentDocument,
 } from "@/hooks/useDocumentStore";
 import useMounted from "@/hooks/useMounted";
-import { HidePreviewIcon, ShowPreviewIcon } from "../../public/assets/svg";
+import {
+  HidePreviewIcon,
+  Logo,
+  ShowPreviewIcon,
+} from "../../public/assets/svg";
 import { useTheme } from "next-themes";
 
 export default function App() {
@@ -32,10 +36,6 @@ export default function App() {
   const activePanel = useActivePanel();
 
   const mounted = useMounted();
-
-  if (!mounted || darkMode === undefined) {
-    return null;
-  }
 
   function handleChange(e: ChangeEvent<HTMLTextAreaElement>) {
     updateCurrentDocument("content", e.target.value);
@@ -65,16 +65,18 @@ export default function App() {
               )}
             </button>
           </div>
-          <form className="mx-auto h-full w-full max-w-2xl font-mono text-preview-paragraph text-neutral-700 dark:text-neutral-400">
-            <textarea
-              name=""
-              id=""
-              className="h-full w-full resize-none overflow-clip bg-[inherit] px-6 py-8"
-              autoFocus
-              onChange={handleChange}
-              value={document?.content}
-            />
-          </form>
+          {mounted && darkMode !== undefined && (
+            <form className="mx-auto h-full w-full max-w-2xl pb-32 font-mono text-preview-paragraph text-neutral-700 dark:text-neutral-400">
+              <textarea
+                name=""
+                id=""
+                className=" h-full w-full resize-none overflow-clip bg-[inherit] px-6 pt-8"
+                autoFocus
+                onChange={handleChange}
+                value={document?.content}
+              />
+            </form>
+          )}
         </div>
 
         <div className="grid h-full grid-rows-[min-content_1fr] overflow-hidden">
@@ -92,14 +94,16 @@ export default function App() {
               )}
             </button>
           </div>
-          <div className="w-full overflow-y-auto">
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              className="mx-auto h-full max-w-2xl overscroll-contain p-6 font-serif text-neutral-700 prose-a:text-[inherit] prose-li:text-neutral-500 dark:text-neutral-100"
-              components={PreviewComponents}
-            >
-              {document?.content}
-            </ReactMarkdown>
+          <div className="h-full w-full overflow-y-auto">
+            {mounted && darkMode !== undefined && (
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                className="mx-auto h-full max-w-2xl overscroll-contain p-6 font-serif text-neutral-700 prose-a:text-[inherit] prose-li:text-neutral-500 dark:text-neutral-100"
+                components={PreviewComponents}
+              >
+                {document?.content}
+              </ReactMarkdown>
+            )}
           </div>
         </div>
       </SplitPane>
