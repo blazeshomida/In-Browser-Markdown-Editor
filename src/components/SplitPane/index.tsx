@@ -9,7 +9,7 @@ import {
   useSetResizing,
 } from "@/hooks/useAppStore";
 import { HidePreviewIcon, ShowPreviewIcon } from "../../../public/assets/svg";
-import useMediaQuery from "@/hooks/useMediaquery";
+import useMediaQuery from "@/hooks/useMediaQuery";
 
 const SplitPane = ({
   splitPoints = [20, 50, 80],
