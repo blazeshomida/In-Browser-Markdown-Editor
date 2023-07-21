@@ -6,9 +6,7 @@ import ReactMarkdown from "react-markdown";
 import { ChangeEvent, ReactNode, isValidElement } from "react";
 import remarkGfm from "remark-gfm";
 import {
-  useActivePanel,
   useDarkMode,
-  useSetActivePanel,
 } from "@/hooks/useAppStore";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import {
@@ -26,8 +24,6 @@ export default function App() {
   const document = useCurrentDocument();
   const updateCurrentDocument = useUpdateCurrentDocument();
   const darkMode = useDarkMode();
-  const setActivePanel = useSetActivePanel();
-  const activePanel = useActivePanel();
 
   const mounted = useMounted();
 

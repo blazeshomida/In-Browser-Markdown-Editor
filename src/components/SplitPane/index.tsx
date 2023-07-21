@@ -1,6 +1,7 @@
 import React, { useEffect, ReactNode } from "react";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import {
+  Panels,
   useActivePanel,
   useMenuOpen,
   useResizing,
@@ -8,6 +9,7 @@ import {
   useSetResizing,
 } from "@/hooks/useAppStore";
 import { HidePreviewIcon, ShowPreviewIcon } from "../../../public/assets/svg";
+import useMediaQuery from "@/hooks/useMediaquery";
 
 const SplitPane = ({
   splitPoints = [20, 50, 80],
@@ -29,6 +31,7 @@ const SplitPane = ({
   const splitPercentage = useTransform(split, (value) => `${value}%`);
   const activePanel = useActivePanel();
   const setActivePanel = useSetActivePanel();
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
   function handleMouseDown() {
     if (!menuOpen) setResizing(true);
@@ -85,6 +88,21 @@ const SplitPane = ({
     }
   }
 
+  function handleShowHide(panel: Panels) {
+    if (isMobile) {
+      setActivePanel(activePanel === "right" ? "left" : "right");
+    }
+    if (!isMobile) {
+      setActivePanel(activePanel === panel ? "none" : panel);
+    }
+  }
+
+  useEffect(() => {
+    if (isMobile) {
+      setActivePanel("left");
+    }
+  }, [isMobile, setActivePanel]);
+
   useEffect(() => {
     if (activePanel === "none") return split.set(50);
     if (activePanel === "left") return split.set(100);
@@ -120,11 +138,7 @@ const SplitPane = ({
         >
           <div className=" sticky top-0 z-10 flex justify-between bg-neutral-200 px-4 py-3 text-heading-s uppercase text-neutral-500 dark:bg-neutral-900 dark:text-neutral-400">
             <p>Markdown</p>
-            <button
-              onClick={() =>
-                setActivePanel(activePanel === "left" ? "none" : "left")
-              }
-            >
+            <button onClick={() => handleShowHide("left")}>
               {activePanel === "left" ? (
                 <HidePreviewIcon />
               ) : (
@@ -153,11 +167,7 @@ const SplitPane = ({
         >
           <div className="sticky top-0 z-10 flex  justify-between bg-neutral-200 px-4 py-3 text-heading-s uppercase text-neutral-500 dark:bg-neutral-900 dark:text-neutral-400">
             <p>Preview</p>
-            <button
-              onClick={() =>
-                setActivePanel(activePanel === "right" ? "none" : "right")
-              }
-            >
+            <button onClick={() => handleShowHide("right")}>
               {activePanel === "right" ? (
                 <HidePreviewIcon />
               ) : (
