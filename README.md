@@ -12,13 +12,13 @@ To install the project, follow these steps:
 
 # Clone the repository
 
-git clone <repository-url>
+git clone https://github.com/blazeshomida/In-Browser-Markdown-Editor
 
 
 
 # Navigate into the directory
 
-cd <repository-directory>
+cd In-Browser-Markdown-Editor
 
 
 
