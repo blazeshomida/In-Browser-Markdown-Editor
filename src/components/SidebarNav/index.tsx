@@ -36,6 +36,12 @@ export default function SidebarNav({}) {
 
   const mounted = useMounted();
 
+  const sortedDocs = [...documents].sort((a, b) => {
+    if (a.lastUpdated < b.lastUpdated) return 1;
+    if (a.lastUpdated > b.lastUpdated) return -1;
+    return 0;
+  });
+
   if (!mounted) {
     return null;
   }
@@ -66,7 +72,7 @@ export default function SidebarNav({}) {
           + New Document
         </Button>
         <div>
-          {documents.map((document: DocumentType) => (
+          {sortedDocs.map((document: DocumentType) => (
             <Button
               key={document.id}
               className="duration-250 flex w-full items-center justify-start gap-4 rounded-lg p-3 text-neutral-100 transition-all hover:bg-neutral-800"
