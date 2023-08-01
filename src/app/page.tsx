@@ -1,24 +1,17 @@
 "use client";
+import { PreviewComponents } from "../components/PreviewComponents/index";
 
 import SidebarNav from "../components/SidebarNav";
 import SplitPane from "@/components/SplitPane";
 import ReactMarkdown from "react-markdown";
-import { ChangeEvent, ReactNode, isValidElement } from "react";
+import { ChangeEvent } from "react";
 import remarkGfm from "remark-gfm";
-import {
-  useDarkMode,
-} from "@/hooks/useAppStore";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import {
-  vs,
-  vscDarkPlus,
-} from "react-syntax-highlighter/dist/esm/styles/prism";
+import { useDarkMode } from "@/hooks/useAppStore";
 import {
   useCurrentDocument,
   useUpdateCurrentDocument,
 } from "@/hooks/useDocumentStore";
 import useMounted from "@/hooks/useMounted";
-import { useTheme } from "next-themes";
 
 export default function App() {
   const document = useCurrentDocument();
@@ -68,126 +61,3 @@ export default function App() {
     </div>
   );
 }
-
-type ChildrenType = {
-  children: ReactNode;
-};
-
-const PreviewH1 = ({ children }: ChildrenType) => {
-  return <h1 className="text-preview-h1 font-bold">{children}</h1>;
-};
-const PreviewH2 = ({ children }: ChildrenType) => {
-  return <h2 className="text-preview-h2 font-light">{children}</h2>;
-};
-const PreviewH3 = ({ children }: ChildrenType) => {
-  return <h3 className="text-preview-h3 font-bold">{children}</h3>;
-};
-const PreviewH4 = ({ children }: ChildrenType) => {
-  return <h4 className="text-preview-h4 font-bold">{children}</h4>;
-};
-const PreviewH5 = ({ children }: ChildrenType) => {
-  return <h5 className="text-preview-h5 font-bold">{children}</h5>;
-};
-const PreviewH6 = ({ children }: ChildrenType) => {
-  return <h6 className="text-preview-h6 font-bold text-orange">{children}</h6>;
-};
-const PreviewParagraph = ({ children }: ChildrenType) => {
-  return (
-    <p className="text-preview-paragraph text-neutral-500 dark:text-neutral-400">
-      {children}
-    </p>
-  );
-};
-const PreviewPre = ({ children }: ChildrenType) => {
-  return <div>{children}</div>;
-};
-
-type PreviewCodeProps = {
-  className?: string;
-  inline?: boolean;
-  children: ReactNode;
-};
-
-const PreviewCode = ({
-  inline,
-  className,
-  children,
-  ...props
-}: PreviewCodeProps): JSX.Element => {
-  const language = className?.split("-")[1];
-  const childString = isValidElement(children)
-    ? ""
-    : Array.isArray(children)
-    ? children.join("")
-    : String(children);
-  const { theme } = useTheme();
-
-  return (
-    <SyntaxHighlighter
-      {...props}
-      style={theme === "dark" ? vscDarkPlus : vs}
-      language={language}
-      wrapLines
-      wrapLongLines
-    >
-      {childString?.replace(/\n$/, "")}
-    </SyntaxHighlighter>
-  );
-};
-
-const PreviewBlockquote = ({ children }: ChildrenType) => {
-  return (
-    <blockquote className="prose border-l-4 border-orange bg-neutral-200 p-6 pl-6 text-preview-paragraph prose-p:text-neutral-700 dark:bg-neutral-800">
-      {children}
-    </blockquote>
-  );
-};
-const PreviewUList = ({ children }: ChildrenType) => {
-  return (
-    <ul className="list-inside list-[revert] pl-6 marker:text-orange ">
-      {children}
-    </ul>
-  );
-};
-const PreviewOList = ({ children }: ChildrenType) => {
-  return <ol className="list-inside list-[revert] pl-6 ">{children}</ol>;
-};
-
-const PreviewComponents = {
-  h1({ children }: ChildrenType) {
-    return <PreviewH1>{children}</PreviewH1>;
-  },
-  h2({ children }: ChildrenType) {
-    return <PreviewH2>{children}</PreviewH2>;
-  },
-  h3({ children }: ChildrenType) {
-    return <PreviewH3>{children}</PreviewH3>;
-  },
-  h4({ children }: ChildrenType) {
-    return <PreviewH4>{children}</PreviewH4>;
-  },
-  h5({ children }: ChildrenType) {
-    return <PreviewH5>{children}</PreviewH5>;
-  },
-  h6({ children }: ChildrenType) {
-    return <PreviewH6>{children}</PreviewH6>;
-  },
-  p({ children }: ChildrenType) {
-    return <PreviewParagraph>{children}</PreviewParagraph>;
-  },
-  pre({ children }: ChildrenType) {
-    return <PreviewPre>{children}</PreviewPre>;
-  },
-  code({ children, className }: PreviewCodeProps) {
-    return <PreviewCode className={className}>{children}</PreviewCode>;
-  },
-  blockquote({ children }: ChildrenType) {
-    return <PreviewBlockquote>{children}</PreviewBlockquote>;
-  },
-  ul({ children }: ChildrenType) {
-    return <PreviewUList>{children}</PreviewUList>;
-  },
-  ol({ children }: ChildrenType) {
-    return <PreviewOList>{children}</PreviewOList>;
-  },
-};

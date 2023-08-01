@@ -1,4 +1,5 @@
-import React, { useEffect, ReactNode } from "react";
+
+import React, { useEffect, ReactNode, useCallback } from "react";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import {
   Panels,
@@ -33,25 +34,28 @@ const SplitPane = ({
   const setActivePanel = useSetActivePanel();
   const isMobile = useMediaQuery("(max-width: 768px)");
 
-  function handleMouseDown() {
+  const handleMouseDown = useCallback(() => {
     if (!menuOpen) setResizing(true);
-  }
+  }, [menuOpen, setResizing]);
 
-  function handleMouseMove(e: MouseEvent) {
-    if (e.button !== 0) return;
-    let newSplit = (e.clientX / window.innerWidth) * 100;
-    const snapPoint = splitPoints.find(
-      (point) => Math.abs(newSplit - point) < range,
-    );
-    if (snapPoint) {
-      const distanceToSnap = Math.abs(newSplit - snapPoint);
-      const dampeningFactor = distanceToSnap / range;
-      newSplit = snapPoint + (newSplit - snapPoint) * dampeningFactor;
-    }
-    split.set(newSplit);
-  }
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (e.button !== 0) return;
+      let newSplit = (e.clientX / window.innerWidth) * 100;
+      const snapPoint = splitPoints.find(
+        (point) => Math.abs(newSplit - point) < range,
+      );
+      if (snapPoint) {
+        const distanceToSnap = Math.abs(newSplit - snapPoint);
+        const dampeningFactor = distanceToSnap / range;
+        newSplit = snapPoint + (newSplit - snapPoint) * dampeningFactor;
+      }
+      split.set(newSplit);
+    },
+    [range, splitPoints, split],
+  );
 
-  function handleMouseUp() {
+  const handleMouseUp = useCallback(() => {
     if (split.get() < collapseThreshold) {
       setActivePanel("right");
     }
@@ -70,23 +74,26 @@ const SplitPane = ({
       split.set(closestSplit);
     }
     setResizing(false);
-  }
+  }, [collapseThreshold, splitPoints, split, setActivePanel, setResizing]);
 
-  function handleMouseOperations(e: MouseEvent, operation: string) {
-    switch (operation) {
-      case "down":
-        handleMouseDown();
-        break;
-      case "move":
-        handleMouseMove(e);
-        break;
-      case "up":
-        handleMouseUp();
-        break;
-      default:
-        break;
-    }
-  }
+  const handleMouseOperations = useCallback(
+    (e: MouseEvent, operation: string) => {
+      switch (operation) {
+        case "down":
+          handleMouseDown();
+          break;
+        case "move":
+          handleMouseMove(e);
+          break;
+        case "up":
+          handleMouseUp();
+          break;
+        default:
+          break;
+      }
+    },
+    [handleMouseDown, handleMouseMove, handleMouseUp],
+  );
 
   function handleShowHide(panel: Panels) {
     if (isMobile) {
@@ -121,7 +128,15 @@ const SplitPane = ({
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [isResizing, split, splitPoints, range, collapseThreshold, setResizing]);
+  }, [
+    isResizing,
+    split,
+    splitPoints,
+    range,
+    collapseThreshold,
+    setResizing,
+    handleMouseOperations,
+  ]);
 
   return (
     <div
