@@ -23,7 +23,7 @@ export default function SidebarNav({}) {
   const mounted = useMounted();
   if (!mounted) return null;
 
-  const sortedDocs = documents.toSorted(
+  const sortedDocs = [...documents].sort(
     (a, z) =>
       new Date(z.lastUpdated).getTime() - new Date(a.lastUpdated).getTime(),
   );

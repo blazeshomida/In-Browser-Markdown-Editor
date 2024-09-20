@@ -7,7 +7,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useDarkMode } from "@/hooks/useAppStore";
 import useMounted from "@/hooks/useMounted";
-import { useCurrentDocument, useDocuments } from "@/hooks/useDocumentStore";
+import { useCurrentDocument } from "@/hooks/useDocumentStore";
 
 export default function App() {
   const darkMode = useDarkMode();
