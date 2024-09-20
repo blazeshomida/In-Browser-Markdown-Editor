@@ -1,25 +1,12 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { Button, Switch, ToggleButton } from "react-aria-components";
-import {
-  DarkModeIcon,
-  DocumentIcon,
-  LightModeIcon,
-  Logo,
-} from "../../../public/assets/svg";
-import {
-  useCurrentLocale,
-  useDarkMode,
-  useMenuOpen,
-  useSetCurrentLocale,
-  useToggleDarkMode,
-} from "@/hooks/useAppStore";
+import React from "react";
+import { Button, Switch } from "react-aria-components";
+import { DarkModeIcon, DocumentIcon, LightModeIcon, Logo } from "@/assets/svg";
+import { useMenuOpen } from "@/hooks/useAppStore";
 import {
   DocumentType,
   useCreateDocument,
-  useCurrentDocument,
   useDocuments,
-  useResetCurrentDocument,
   useSetCurrentDocument,
 } from "@/hooks/useDocumentStore";
 import { motion } from "framer-motion";
@@ -31,20 +18,15 @@ export default function SidebarNav({}) {
   const createDocument = useCreateDocument();
   const documents = useDocuments();
   const setCurrentDocument = useSetCurrentDocument();
-  const currentLocale = useCurrentLocale();
   const { theme, setTheme } = useTheme();
 
   const mounted = useMounted();
+  if (!mounted) return null;
 
-  const sortedDocs = [...documents].sort((a, b) => {
-    if (a.lastUpdated < b.lastUpdated) return 1;
-    if (a.lastUpdated > b.lastUpdated) return -1;
-    return 0;
-  });
-
-  if (!mounted) {
-    return null;
-  }
+  const sortedDocs = documents.toSorted(
+    (a, z) =>
+      new Date(z.lastUpdated).getTime() - new Date(a.lastUpdated).getTime(),
+  );
 
   function handleCreate() {
     createDocument();
@@ -61,7 +43,7 @@ export default function SidebarNav({}) {
       } fixed inset-y-0 left-0 flex w-64  flex-col justify-between bg-neutral-900 px-6 py-4 transition-transform ease-out`}
     >
       <div>
-        <Logo className=" my-4 md:hidden" />
+        <Logo className="my-4 text-neutral-100 md:hidden" />
         <p className="text-heading-s uppercase text-neutral-500">
           My documents
         </p>
@@ -81,9 +63,9 @@ export default function SidebarNav({}) {
               <DocumentIcon />
               <div className="text-left">
                 <p className="text-body-m text-neutral-500">
-                  {Intl.DateTimeFormat(currentLocale, {
+                  {new Date(document.lastUpdated).toLocaleString(undefined, {
                     dateStyle: "long",
-                  }).format(new Date(document.lastUpdated))}
+                  })}
                 </p>
                 <p className="text-heading-m ">{document.title}</p>
               </div>

@@ -1,4 +1,3 @@
-import { stat } from "fs";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -13,8 +12,6 @@ type AppStore = {
   toggleDarkMode: () => void;
   activePanel: Panels;
   setActivePanel: (panel: Panels) => void;
-  currentLocale: string;
-  setCurrentLocale: (locale: string) => void;
 };
 
 const useAppStore = create(
@@ -29,15 +26,12 @@ const useAppStore = create(
       toggleDarkMode: () => set((state) => ({ darkMode: !state.darkMode })),
       activePanel: "none",
       setActivePanel: (activePanel: Panels) => set({ activePanel }),
-      currentLocale: "en-US", // set a default locale
-      setCurrentLocale: (locale) => set({ currentLocale: locale }),
     }),
     {
       name: "app-storage",
       partialize: (state) =>
         ({
           darkMode: state.darkMode,
-          currentLocale: state.currentLocale,
         }) as AppStore,
     },
   ),
@@ -53,7 +47,3 @@ export const useToggleDarkMode = () =>
 export const useActivePanel = () => useAppStore((state) => state.activePanel);
 export const useSetActivePanel = () =>
   useAppStore((state) => state.setActivePanel);
-export const useCurrentLocale = () =>
-  useAppStore((state) => state.currentLocale);
-export const useSetCurrentLocale = () =>
-  useAppStore((state) => state.setCurrentLocale);

@@ -1,55 +1,84 @@
 import { useTheme } from "next-themes";
-import { PropsWithChildren, ReactNode, isValidElement } from "react";
-import SyntaxHighlighter from "react-syntax-highlighter/dist/esm/default-highlight";
-import { vs } from "react-syntax-highlighter/dist/esm/styles/hljs";
-import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { ReactNode, isValidElement } from "react";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import {
+  vs,
+  vscDarkPlus,
+} from "react-syntax-highlighter/dist/esm/styles/prism";
 
-export const PreviewH1 = ({ children }: PropsWithChildren) => {
+// Heading Components
+
+export function H1({ children }: { children: ReactNode }): JSX.Element {
   return <h1 className="text-preview-h1 font-bold">{children}</h1>;
-};
-export const PreviewH2 = ({ children }: PropsWithChildren) => {
+}
+
+export function H2({ children }: { children: ReactNode }): JSX.Element {
   return <h2 className="text-preview-h2 font-light">{children}</h2>;
-};
-export const PreviewH3 = ({ children }: PropsWithChildren) => {
+}
+
+export function H3({ children }: { children: ReactNode }): JSX.Element {
   return <h3 className="text-preview-h3 font-bold">{children}</h3>;
-};
-export const PreviewH4 = ({ children }: PropsWithChildren) => {
+}
+
+export function H4({ children }: { children: ReactNode }): JSX.Element {
   return <h4 className="text-preview-h4 font-bold">{children}</h4>;
-};
-export const PreviewH5 = ({ children }: PropsWithChildren) => {
+}
+
+export function H5({ children }: { children: ReactNode }): JSX.Element {
   return <h5 className="text-preview-h5 font-bold">{children}</h5>;
-};
-export const PreviewH6 = ({ children }: PropsWithChildren) => {
+}
+
+export function H6({ children }: { children: ReactNode }): JSX.Element {
   return <h6 className="text-preview-h6 font-bold text-orange">{children}</h6>;
-};
-export const PreviewParagraph = ({ children }: PropsWithChildren) => {
+}
+
+// Paragraph Component
+
+export function Paragraph({ children }: { children: ReactNode }): JSX.Element {
   return (
     <p className="text-preview-paragraph text-neutral-500 dark:text-neutral-400">
       {children}
     </p>
   );
-};
-export const PreviewPre = ({ children }: PropsWithChildren) => {
+}
+
+// Preformatted Text Component
+
+export function Pre({ children }: { children: ReactNode }): JSX.Element {
   return <div>{children}</div>;
-};
-export type PreviewCodeProps = {
+}
+
+// Code Component
+
+type CodeProps = {
   className?: string;
   inline?: boolean;
   children: ReactNode;
 };
-export const PreviewCode = ({
+
+export function Code({
   inline,
   className,
   children,
   ...props
-}: PreviewCodeProps): JSX.Element => {
+}: CodeProps): JSX.Element {
   const language = className?.split("-")[1];
   const childString = isValidElement(children)
     ? ""
     : Array.isArray(children)
-    ? children.join("")
-    : String(children);
+      ? children.join("")
+      : String(children);
+
   const { theme } = useTheme();
+
+  if (inline) {
+    return (
+      <code className={className} {...props}>
+        {children}
+      </code>
+    );
+  }
+
   return (
     <SyntaxHighlighter
       {...props}
@@ -61,70 +90,47 @@ export const PreviewCode = ({
       {childString?.replace(/\n$/, "")}
     </SyntaxHighlighter>
   );
-};
-export const PreviewBlockquote = ({ children }: PropsWithChildren) => {
+}
+
+// Blockquote Component
+
+export function Blockquote({ children }: { children: ReactNode }): JSX.Element {
   return (
     <blockquote className="prose border-l-4 border-orange bg-neutral-200 p-6 pl-6 text-preview-paragraph prose-p:text-neutral-700 dark:bg-neutral-800">
       {children}
     </blockquote>
   );
-};
-export const PreviewUList = ({ children }: PropsWithChildren) => {
+}
+
+// Unordered List Component
+
+export function UList({ children }: { children: ReactNode }): JSX.Element {
   return (
-    <ul className="list-inside list-[revert] pl-6 marker:text-orange ">
+    <ul className="list-inside list-[revert] pl-6 marker:text-orange">
       {children}
     </ul>
   );
-};
-export const PreviewOList = ({ children }: PropsWithChildren) => {
-  return <ol className="list-inside list-[revert] pl-6 ">{children}</ol>;
-};
+}
+
+// Ordered List Component
+
+export function OList({ children }: { children: ReactNode }): JSX.Element {
+  return <ol className="list-inside list-[revert] pl-6">{children}</ol>;
+}
+
+// Mapping markdown elements to custom components
+
 export const PreviewComponents = {
-  h1({ children }: PropsWithChildren) {
-    return <PreviewH1>{children}</PreviewH1>;
-  },
-
-  h2({ children }: PropsWithChildren) {
-    return <PreviewH2>{children}</PreviewH2>;
-  },
-
-  h3({ children }: PropsWithChildren) {
-    return <PreviewH3>{children}</PreviewH3>;
-  },
-
-  h4({ children }: PropsWithChildren) {
-    return <PreviewH4>{children}</PreviewH4>;
-  },
-
-  h5({ children }: PropsWithChildren) {
-    return <PreviewH5>{children}</PreviewH5>;
-  },
-
-  h6({ children }: PropsWithChildren) {
-    return <PreviewH6>{children}</PreviewH6>;
-  },
-
-  p({ children }: PropsWithChildren) {
-    return <PreviewParagraph>{children}</PreviewParagraph>;
-  },
-
-  pre({ children }: PropsWithChildren) {
-    return <PreviewPre>{children}</PreviewPre>;
-  },
-
-  code({ children, className }: PreviewCodeProps) {
-    return <PreviewCode className={className}>{children}</PreviewCode>;
-  },
-
-  blockquote({ children }: PropsWithChildren) {
-    return <PreviewBlockquote>{children}</PreviewBlockquote>;
-  },
-
-  ul({ children }: PropsWithChildren) {
-    return <PreviewUList>{children}</PreviewUList>;
-  },
-
-  ol({ children }: PropsWithChildren) {
-    return <PreviewOList>{children}</PreviewOList>;
-  },
+  h1: H1,
+  h2: H2,
+  h3: H3,
+  h4: H4,
+  h5: H5,
+  h6: H6,
+  p: Paragraph,
+  pre: Pre,
+  code: Code,
+  blockquote: Blockquote,
+  ul: UList,
+  ol: OList,
 };

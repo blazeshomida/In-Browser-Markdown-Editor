@@ -31,7 +31,7 @@ You can see examples of ordered and unordered lists above.
 
 This markdown editor allows for inline-code snippets, like this: <p>I'm inline</p>. It also allows for larger code blocks like this:
 
-\`\`\`
+\`\`\`html
 <main>
   <h1>This is a larger code block</h1>
 </main>
@@ -57,7 +57,7 @@ type DocumentStore = {
   resetCurrentDocument: () => void;
   createDocument: () => void;
   deleteDocument: () => void;
-  updateDocument: () => void;
+  saveDocument: () => void;
 };
 const useDocumentStore = create(
   persist<DocumentStore>(
@@ -107,7 +107,7 @@ const useDocumentStore = create(
               currentDocument: filteredDocs.at(-1) || newDocument,
             };
           }),
-        updateDocument: () =>
+        saveDocument: () =>
           set((state) => ({
             documents: state.documents.map((document) =>
               document.id === state.currentDocument.id
@@ -136,5 +136,5 @@ export const useCreateDocument = () =>
   useDocumentStore((state) => state.createDocument);
 export const useDeleteDocument = () =>
   useDocumentStore((state) => state.deleteDocument);
-export const useUpdateDocument = () =>
-  useDocumentStore((state) => state.updateDocument);
+export const useSaveDocument = () =>
+  useDocumentStore((state) => state.saveDocument);

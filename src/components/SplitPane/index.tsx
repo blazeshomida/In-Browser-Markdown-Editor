@@ -1,4 +1,3 @@
-
 import React, { useEffect, ReactNode, useCallback } from "react";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import {
@@ -9,7 +8,7 @@ import {
   useSetActivePanel,
   useSetResizing,
 } from "@/hooks/useAppStore";
-import { HidePreviewIcon, ShowPreviewIcon } from "../../../public/assets/svg";
+import { HidePreviewIcon, ShowPreviewIcon } from "@/assets/svg";
 import useMediaQuery from "@/hooks/useMediaQuery";
 
 const SplitPane = ({

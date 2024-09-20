@@ -8,24 +8,24 @@ import {
   Logo,
   MenuIcon,
   SaveIcon,
-} from "../../../public/assets/svg";
+} from "@/assets/svg";
 import { useMenuOpen, useToggleMenu } from "@/hooks/useAppStore";
 import {
   useCurrentDocument,
   useDeleteDocument,
   useUpdateCurrentDocument,
-  useUpdateDocument,
+  useSaveDocument,
 } from "@/hooks/useDocumentStore";
 import useMounted from "@/hooks/useMounted";
 
 const Header = () => {
   const menuOpen = useMenuOpen();
   const setMenuOpen = useToggleMenu();
-  const updateDocument = useUpdateDocument();
+  const saveDocument = useSaveDocument();
   const deleteDocument = useDeleteDocument();
 
   function handleSave() {
-    updateDocument();
+    saveDocument();
   }
 
   return (
@@ -73,16 +73,16 @@ const Header = () => {
 
 export default Header;
 
-function TitleCard({}) {
+function TitleCard() {
   const [isEditing, setIsEditing] = useState(false);
   const document = useCurrentDocument();
   const setCurrentDocument = useUpdateCurrentDocument();
-  const updateDocument = useUpdateDocument();
+  const saveDocument = useSaveDocument();
   const mounted = useMounted();
 
   function handleEdit() {
     setIsEditing((prev) => !prev);
-    updateDocument();
+    saveDocument();
   }
 
   function handleInput(e: ChangeEvent<HTMLInputElement>) {
@@ -93,7 +93,7 @@ function TitleCard({}) {
   function handleKeydown(e: KeyboardEvent<HTMLInputElement>) {
     if (e.code !== "Enter" && e.code !== "Escape") return;
     setIsEditing(false);
-    updateDocument();
+    saveDocument();
   }
 
   return (
