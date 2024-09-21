@@ -115,7 +115,7 @@ const MainContent = ({
         </form>
       </Panel>
 
-      <PanelResizeHandle className="w-[1px] cursor-col-resize bg-neutral-300 hover:bg-orange-hover data-[resize-handle-state='drag']:bg-orange-hover dark:bg-neutral-600" />
+      <PanelResizeHandle className="w-[1px] cursor-col-resize bg-neutral-300 data-[resize-handle-state='drag']:bg-orange-hover data-[resize-handle-state='hover']:bg-orange-hover dark:[&:not([data-resize-handle-state='drag'],[data-resize-handle-state='hover'])]:bg-neutral-600" />
       <Panel
         id="preview"
         ref={previewPanelRef}
