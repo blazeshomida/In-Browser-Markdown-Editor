@@ -15,7 +15,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="h-full" suppressHydrationWarning>
-      <body className="flex h-full flex-col overflow-x-hidden caret-orange">
+      <body className="grid h-dvh grid-rows-[auto_1fr] caret-orange">
         <ThemeProvider>
           <Header />
           {children}
