@@ -1,225 +1,131 @@
-# In-Browser Markdown Editor
+# Markdown
 
 ## Introduction
 
-This project is a Markdown editor with a split view interface. Users can write Markdown syntax in one panel and see the rendered Markdown in the other. It's built using React and Next.js for the front-end, Zustand for state management, and Framer Motion for animations.
-
-## Installation
-
-To install the project, follow these steps:
-
-```bash
-
-# Clone the repository
-
-git clone https://github.com/blazeshomida/In-Browser-Markdown-Editor
-
-
-
-# Navigate into the directory
-
-cd In-Browser-Markdown-Editor
-
-
-
-# Install dependencies
-
-npm install
-
-
-
-# Start the development server
-
-npm run dev
-
-```
-
-## Usage
-
-After starting the development server, navigate to `localhost:3000` in your browser. You'll see two panels. The left panel is the Markdown editor, where you can write your content. The right panel is the preview panel, where you can see the rendered content.
-
-You can adjust the width of the panels by clicking and dragging the divider between them. The panels will snap to predefined positions. You can also hide one panel to focus on the other.
-
-## Code Structure
-
-The project is structured into several React components and custom hooks:
-
-### Components
-
-1. `SplitPane`: This is the main component that renders the split view interface. It uses the Framer Motion library for smooth animations during resizing.
-
-2. `Header`: This component renders a header with controls for saving and deleting documents. It also contains the `TitleCard` for editing the document title.
-
-3. `TitleCard`: This is a sub-component within the `Header`. It allows users to view and edit the title of the current document, demonstrating the reusability of components in React.
-
-4. `SidebarNav`: This is the component responsible for rendering the navigation menu. It allows users to switch between different documents and create new ones. It also contains a switch for toggling between light and dark modes.
-
-### Hooks
-
-1. `useAppStore`, `useDocumentStore`: These are Zustand stores for managing the state of the application.
-
-2. `useMenuOpen`, `useToggleMenu`, `useResizing`, `useSetResizing`, `useDarkMode`, `useToggleDarkMode`, `useActivePanel`, `useSetActivePanel`, `useCurrentLocale`, `useSetCurrentLocale`: These are custom hooks for reading and manipulating the state of the application.
-
-3. `useCurrentDocument`, `useUpdateCurrentDocument`, `useUpdateDocument`, `useDeleteDocument`: These are custom hooks for managing the state of the document.
-
-4. `useMounted`: This custom hook returns a Boolean indicating whether the component is mounted.
-
-5. `useMediaQuery`: This custom hook provides a simple interface for responsive design.
+**Markdown** is a dynamic, user-friendly **Markdown editor** with a split-pane interface. Users can write Markdown in one panel and instantly see the live preview in another. Built using **React** and **Next.js**, this project takes advantage of **Zustand** for state management, **Framer Motion** for animations, and **Next Themes** for dark mode functionality.
 
 ## Features
 
-Here are some of the key features of the project:
+### 1. Real-Time Markdown Preview
 
-- Split view interface: This allows users to edit Markdown on one side and see the rendered output on the other. It's a user-friendly feature that offers real-time feedback.
+- Edit Markdown in the left panel and see the live-rendered output in the right panel.
+- Supports **GitHub Flavored Markdown** through `remark-gfm`.
 
-Here's how the split view is implemented:
+### 2. Document Management
 
-```jsx
-// Inside App component
+- Easily **create**, **update**, and **delete** Markdown documents with autosave functionality.
+- Use the sidebar for quick access to documents and seamless switching.
 
-<SplitPane
-  range={10}
-  defaultSplit={50}
-  splitPoints={[30, 50, 70]}
-  collapseThreshold={5}
->
-  <form className="mx-auto h-full w-full max-w-2xl pb-32 font-mono text-preview-paragraph text-neutral-700 dark:text-neutral-400">
-    <textarea
-      name=""
-      id=""
-      className=" h-full w-full resize-none overflow-clip bg-[inherit] px-6 pt-8"
-      autoFocus
-      onChange={handleChange}
-      value={document?.content}
-    />
-  </form>
+### 3. Responsive Design
 
-  <div className="h-full w-full overflow-y-auto">
-    <ReactMarkdown
-      remarkPlugins={[remarkGfm]}
-      className="_markdown-preview mx-auto h-full max-w-2xl overscroll-contain p-6 font-serif text-neutral-700 prose-a:text-[inherit] prose-li:text-neutral-500 dark:text-neutral-100"
-      components={PreviewComponents}
-    >
-      {document?.content}
-    </ReactMarkdown>
-  </div>
-</SplitPane>
+- Optimized for both desktop and mobile devices.
+- On mobile, toggle between the editor and preview modes to maximize space.
+
+### 4. Dark Mode
+
+- Switch between light and dark themes with smooth transitions.
+
+### 5. Adjustable Layout
+
+- Drag the divider between the editor and preview to resize panels.
+- Layout preferences are saved in cookies, ensuring a consistent experience across sessions.
+
+## Installation
+
+To install and run the project locally:
+
+```bash
+# Clone the repository
+git clone https://github.com/blazeshomida/In-Browser-Markdown-Editor
+
+# Navigate into the project directory
+cd In-Browser-Markdown-Editor
+
+# Install dependencies
+npm install
+
+# Start the development server
+npm run dev
 ```
 
-- Document management: Users can create, update, and delete documents.
+Visit `http://localhost:3000` in your browser to access the editor.
 
-Here's how a new document is created:
+## Usage
 
-```jsx
+Once the application is up and running:
 
-// Inside useDocumentStore
+1. **Write Markdown** in the left pane. The right pane will automatically render the formatted content.
+2. **Resize the Layout** by dragging the divider between the panels.
+3. **Manage Documents** using the sidebar to create, delete, or switch between documents.
+4. **Dark Mode**: Toggle between light and dark modes via the sidebar switch.
+5. **Mobile**: The app adapts to smaller screens by toggling between editor and preview views.
 
+## Code Structure
+
+This project is designed for modularity and ease of maintenance. Below is an overview of the main components and hooks:
+
+### Components
+
+- **RootLayout**: The main layout that wraps the app, integrating the header and theme provider.
+- **MainContent**: The core component responsible for rendering the Markdown editor and preview, supporting the split-pane layout.
+- **Header**: Handles document actions like saving, deleting, and renaming.
+- **SidebarNav**: Manages navigation between documents and theme toggling.
+
+### Custom Hooks
+
+- **useDocumentStore**: Manages the creation, updating, and deletion of documents.
+- **useMediaQuery**: Provides responsive design functionality based on screen size.
+- **useMenuOpen**: Controls the opening and closing of the sidebar.
+- **useMounted**: Ensures that certain actions are only executed after the component is mounted, preventing SSR/CSR issues.
+
+## Example: Creating a New Document
+
+This is an example of how the document store creates a new document using Zustand:
+
+```tsx
 createDocument: () =>
-
-set((state) => {
-
-const newDocument = createNewDocument();
-
-return {
-
-documents: [...state.documents, newDocument],
-
-currentDocument: newDocument,
-
-};
-
-}),
-
+  set((state) => {
+    const newDocument = createNewDocument();
+    return {
+      documents: [...state.documents, newDocument],
+      currentDocument: newDocument,
+    };
+  }),
 ```
 
-- Responsive design: The interface adjusts depending on the screen size. This is achieved using media queries and the `useMediaQuery` hook.
+## Example: Responsive Design Hook
 
-```jsx
-import { useState, useEffect } from "react";
+The `useMediaQuery` hook dynamically adjusts the layout based on the screen width:
 
-
-
+```tsx
 const useMediaQuery = (query: string) => {
-
-const [matches, setMatches] = useState(false);
-
-
-
-useEffect(() => {
-
-const media = window.matchMedia(query);
-
-if (media.matches !== matches) {
-
-setMatches(media.matches);
-
-}
-
-const listener = () => setMatches(media.matches);
-
-window.addEventListener("resize", listener);
-
-return () => window.removeEventListener("resize", listener);
-
-}, [matches, query]);
-
-
-
-return matches;
-
+  const [matches, setMatches] = useState(false);
+  useEffect(() => {
+    const media = window.matchMedia(query);
+    const listener = () => setMatches(media.matches);
+    window.addEventListener("resize", listener);
+    return () => window.removeEventListener("resize", listener);
+  }, [query]);
+  return matches;
 };
-
-
-
-export default useMediaQuery;
 ```
 
-- Dark mode: Users can switch between light and dark mode.
+## Future Improvements
 
-Here's how the dark mode is toggled:
-
-```jsx
-
-// Inside useAppStore
-
-toggleDarkMode: () => set((state) => ({ darkMode: !state.darkMode })),
-
-```
-
-- Navigation menu: Users can switch between different documents and create new ones. They can also toggle between light and dark modes.
-
-Here's how a new document is selected in the navigation menu:
-
-```jsx
-// Inside SidebarNav
-
-<Button
-  key={document.id}
-  className="duration-250 flex w-full items-center justify-start gap-4 rounded-lg p-3 text-neutral-100 transition-all hover:bg-neutral-800"
-  onPress={() => handleSetCurrent(document)}
->
-  <DocumentIcon />
-
-  <div className="text-left">
-    <p className="text-body-m text-neutral-500">
-      {Intl.DateTimeFormat(currentLocale, {
-        dateStyle: "long",
-      }).format(new Date(document.lastUpdated))}
-    </p>
-
-    <p className="text-heading-m ">{document.title}</p>
-  </div>
-</Button>
-```
-
-## Documentation
-
-For more details about the project, please refer to the source code and inline comments. The source code is organized into components and hooks, each in its own file. Additional documentation on how to use Markdown can be found in the placeholder text of the Markdown editor.
+1. **Enhanced Markdown Features**: Add support for tables, task lists, and other advanced Markdown syntax.
+2. **Cloud Sync**: Allow users to save and sync documents across devices via the cloud.
+3. **Custom Themes**: Offer a range of customizable themes beyond light and dark mode.
 
 ## Contributing
 
-Contributions to the project are welcome. Please create an issue to discuss your feature or bug fix before submitting a pull request.
+Contributions are always welcome! If you'd like to contribute:
+
+1. Fork the repository.
+2. Create a new branch for your feature or bug fix.
+3. Submit a pull request for review.
+
+Please open an issue for any significant changes you'd like to discuss before implementation.
 
 ## Acknowledgments
 
-Thanks to all contributors who helped in the development of this project.
+Thanks to all contributors who have helped develop and improve **Markdown**.
