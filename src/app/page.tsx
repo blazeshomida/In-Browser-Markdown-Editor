@@ -1,6 +1,6 @@
 import { cookies } from "next/dist/client/components/headers";
-import SidebarNav from "../components/SidebarNav";
 import MainContent from "@/components/MainContent";
+import SidebarNav from "@/components/SidebarNav";
 
 export default function App() {
   const layout = cookies().get("react-resizable-panels:layout");

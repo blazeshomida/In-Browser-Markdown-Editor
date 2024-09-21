@@ -1,8 +1,6 @@
 "use client";
-import React from "react";
 import { Button, Switch } from "react-aria-components";
 import { DarkModeIcon, DocumentIcon, LightModeIcon, Logo } from "@/assets/svg";
-import { useMenuOpen } from "@/hooks/useAppStore";
 import {
   DocumentType,
   useCreateDocument,
@@ -12,35 +10,23 @@ import {
 import { motion } from "framer-motion";
 import useMounted from "@/hooks/useMounted";
 import { useTheme } from "next-themes";
+import { useMenuOpen } from "@/hooks/useMenuOpen";
 
 export default function SidebarNav({}) {
-  const menuOpen = useMenuOpen();
+  const [isMenuOpen] = useMenuOpen();
   const createDocument = useCreateDocument();
   const documents = useDocuments();
   const setCurrentDocument = useSetCurrentDocument();
-  const { theme, setTheme } = useTheme();
-
-  const mounted = useMounted();
-  if (!mounted) return null;
-
   const sortedDocs = [...documents].sort(
     (a, z) =>
       new Date(z.lastUpdated).getTime() - new Date(a.lastUpdated).getTime(),
   );
 
-  function handleCreate() {
-    createDocument();
-  }
-
-  function handleSetCurrent(document: DocumentType) {
-    setCurrentDocument(document);
-  }
-
   return (
     <nav
       className={`${
-        menuOpen ? "translate-x-0" : "-translate-x-64 duration-300"
-      } fixed inset-y-0 left-0 flex w-64  flex-col justify-between bg-neutral-900 px-6 py-4 transition-transform ease-out`}
+        isMenuOpen ? "translate-x-0" : "-translate-x-64 duration-300"
+      } fixed inset-y-0 left-0 flex h-full w-64 flex-col justify-between bg-neutral-900 px-6 py-4 transition-transform ease-out`}
     >
       <div>
         <Logo className="my-4 text-neutral-100 md:hidden" />
@@ -48,7 +34,7 @@ export default function SidebarNav({}) {
           My documents
         </p>
         <Button
-          onPress={handleCreate}
+          onPress={() => createDocument()}
           className="my-6 w-full rounded bg-orange py-3 text-neutral-100  transition-all duration-150 data-[hovered]:bg-orange-hover"
         >
           + New Document
@@ -58,7 +44,7 @@ export default function SidebarNav({}) {
             <Button
               key={document.id}
               className="duration-250 flex w-full items-center justify-start gap-4 rounded-lg p-3 text-neutral-100 transition-all hover:bg-neutral-800"
-              onPress={() => handleSetCurrent(document)}
+              onPress={() => setCurrentDocument(document)}
             >
               <DocumentIcon />
               <div className="text-left">
@@ -73,25 +59,33 @@ export default function SidebarNav({}) {
           ))}
         </div>
       </div>
-
-      <Switch
-        onChange={() => setTheme(theme === "dark" ? "light" : "dark")}
-        className="flex w-min cursor-pointer items-center gap-3"
-      >
-        <DarkModeIcon className="text-neutral-600 transition-all duration-75 dark:text-neutral-100" />
-        <div className="relative h-6 w-12 rounded-full bg-neutral-600  transition-all duration-500">
-          <motion.div
-            animate={
-              theme === "dark"
-                ? { left: 0, right: "unset" }
-                : { left: "unset", right: 0 }
-            }
-            transition={{ duration: 0.15 }}
-            className="absolute h-6 w-6 scale-75 rounded-full bg-neutral-100"
-          ></motion.div>
-        </div>
-        <LightModeIcon className="text-neutral-100 transition-all duration-75 dark:text-neutral-600" />
-      </Switch>
+      <ThemeToggle />
     </nav>
+  );
+}
+
+function ThemeToggle() {
+  const { theme, setTheme } = useTheme();
+  const mounted = useMounted();
+  if (!mounted) return null;
+  return (
+    <Switch
+      onChange={() => setTheme(theme === "dark" ? "light" : "dark")}
+      className="flex w-min cursor-pointer items-center gap-3"
+    >
+      <DarkModeIcon className="text-neutral-600 transition-all duration-75 dark:text-neutral-100" />
+      <div className="relative h-6 w-12 rounded-full bg-neutral-600  transition-all duration-500">
+        <motion.div
+          animate={
+            theme === "dark"
+              ? { left: 0, right: "unset" }
+              : { left: "unset", right: 0 }
+          }
+          transition={{ duration: 0.15 }}
+          className="absolute h-6 w-6 scale-75 rounded-full bg-neutral-100"
+        ></motion.div>
+      </div>
+      <LightModeIcon className="text-neutral-100 transition-all duration-75 dark:text-neutral-600" />
+    </Switch>
   );
 }

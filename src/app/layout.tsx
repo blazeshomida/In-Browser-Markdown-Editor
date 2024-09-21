@@ -14,8 +14,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="h-full" suppressHydrationWarning>
-      <body className="grid h-dvh grid-rows-[auto_1fr] caret-orange">
+    <html lang="en" suppressHydrationWarning>
+      <body className="grid h-dvh grid-rows-[auto_1fr] bg-neutral-100 caret-orange dark:bg-neutral-1000">
         <ThemeProvider>
           <Header />
           {children}

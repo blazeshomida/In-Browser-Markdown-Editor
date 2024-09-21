@@ -1,5 +1,5 @@
 "use client";
-import React, { ChangeEvent, KeyboardEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, KeyboardEvent, useState } from "react";
 import { Button, Input, TextField } from "react-aria-components";
 import {
   CloseIcon,
@@ -9,20 +9,18 @@ import {
   MenuIcon,
   SaveIcon,
 } from "@/assets/svg";
-import { useMenuOpen, useToggleMenu } from "@/hooks/useAppStore";
 import {
   useCurrentDocument,
   useDeleteDocument,
   useUpdateCurrentDocument,
   useSaveDocument,
 } from "@/hooks/useDocumentStore";
-import useMounted from "@/hooks/useMounted";
+import { useMenuOpen } from "@/hooks/useMenuOpen";
 
 const Header = () => {
-  const menuOpen = useMenuOpen();
-  const setMenuOpen = useToggleMenu();
   const saveDocument = useSaveDocument();
   const deleteDocument = useDeleteDocument();
+  const [isMenuOpen, toggleMenu] = useMenuOpen();
 
   function handleSave() {
     saveDocument();
@@ -31,21 +29,20 @@ const Header = () => {
   return (
     <header
       className={`${
-        menuOpen ? "translate-x-64" : "translate-x-0 duration-300"
+        isMenuOpen ? "translate-x-64" : "translate-x-0 duration-300"
       } flex bg-neutral-800 text-neutral-100  transition-transform ease-out`}
     >
       <Button
         className="grid aspect-square w-min place-content-center bg-neutral-700 p-4 transition-all duration-200 focus:outline-none data-[hovered]:bg-orange data-[focus-visible]:ring-4 data-[focus-visible]:ring-inset data-[focus-visible]:ring-orange md:p-5"
         aria-label="Open Menu"
-        onPress={() => setMenuOpen()}
+        onPress={toggleMenu}
       >
-        {menuOpen ? (
+        {isMenuOpen ? (
           <CloseIcon className="object-contain" />
         ) : (
           <MenuIcon className="object-contain" />
         )}
       </Button>
-
       <div className="mx-auto flex w-full items-center justify-between p-2  md:p-4 ">
         <div className="flex items-center gap-6 divide-neutral-600 pl-2 md:divide-x">
           <Logo className=" hidden md:block " />
@@ -78,7 +75,6 @@ function TitleCard() {
   const document = useCurrentDocument();
   const setCurrentDocument = useUpdateCurrentDocument();
   const saveDocument = useSaveDocument();
-  const mounted = useMounted();
 
   function handleEdit() {
     setIsEditing((prev) => !prev);
@@ -119,12 +115,10 @@ function TitleCard() {
               onKeyDown={handleKeydown}
             />
           </TextField>
-        ) : mounted ? (
+        ) : (
           <p className="cursor-pointer text-heading-m" onClick={handleEdit}>
             {document.title}
           </p>
-        ) : (
-          <div>Loading</div>
         )}
       </div>
     </div>
