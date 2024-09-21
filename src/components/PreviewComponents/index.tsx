@@ -1,3 +1,4 @@
+import useMounted from "@/hooks/useMounted";
 import { useTheme } from "next-themes";
 import { ReactNode, isValidElement } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -70,6 +71,8 @@ export function Code({
       : String(children);
 
   const { theme } = useTheme();
+  const mounted = useMounted();
+  if (!mounted) return <></>;
 
   if (inline) {
     return (

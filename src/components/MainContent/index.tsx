@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { HidePreviewIcon, ShowPreviewIcon } from "@/assets/svg";
 import {
   useCurrentDocument,
@@ -15,7 +15,6 @@ import {
   PanelResizeHandle,
   type ImperativePanelHandle,
 } from "react-resizable-panels";
-import { useCookies } from "@/hooks/useCookies";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { useMenuOpen } from "@/hooks/useMenuOpen";
 
@@ -27,10 +26,7 @@ const MainContent = ({
   defaultLayout: number[] | undefined;
 }) => {
   const [isMenuOpen] = useMenuOpen();
-  const [activePanel, setActivePanel] = useCookies<Panels>(
-    "activePanel",
-    "none",
-  );
+  const [activePanel, setActivePanel] = useState<Panels>("none");
   const isMobile = useMediaQuery("(max-width: 768px)");
   const currentDoc = useCurrentDocument();
   const updateCurrentDocument = useUpdateCurrentDocument();
@@ -115,7 +111,7 @@ const MainContent = ({
         </form>
       </Panel>
 
-      <PanelResizeHandle className="w-[1px] cursor-col-resize bg-neutral-300 data-[resize-handle-state='drag']:bg-orange-hover data-[resize-handle-state='hover']:bg-orange-hover dark:[&:not([data-resize-handle-state='drag'],[data-resize-handle-state='hover'])]:bg-neutral-600" />
+      <PanelResizeHandle className="w-[1px] cursor-col-resize bg-neutral-300 data-[resize-handle-state='drag']:bg-orange-hover data-[resize-handle-state='hover']:bg-orange-hover dark:bg-neutral-600" />
       <Panel
         id="preview"
         ref={previewPanelRef}
